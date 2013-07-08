@@ -507,5 +507,21 @@ class ImportPurgatory(models.Model):
         self.counter = self.counter or Device.get_own_device().get_counter()
         super(ImportPurgatory, self).save(*args, **kwargs)
 
+class Playlist(SyncedModel):
+    title = models.CharField(max_length=30)
+    description = models.TextField()
+    creator = models.ForeignKey(FacilityUser,blank=True,null=True)
+    forked_from = models.IntegerField(default=0)
+    # Default of 0 above means it's not forked from any other playlist. 
 
-model_sync.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
+class PlaylistEntity(SyncedModel):
+    entity_source = models.CharField(max_length=30)
+    entity_kind = models.CharField(max_length=10)
+    entity_id = models.CharField(max_length=50) 
+    playlist = models.ForeignKey(Playlist,blank=False)
+    # Need to give UUID based on the above 4 variables. 
+    #id = 
+    teacher_note = models.TextField()
+    sort_order = models.IntegerField(blank=False)
+
+model_sync.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog, Playlist, PlaylistEntity])
