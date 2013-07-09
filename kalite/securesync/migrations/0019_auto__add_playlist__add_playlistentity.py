@@ -18,7 +18,7 @@ class Migration(SchemaMigration):
             ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
             ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('description', self.gf('django.db.models.fields.TextField')()),
+            ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('creator', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'], null=True, blank=True)),
             ('forked_from', self.gf('django.db.models.fields.IntegerField')(default=0)),
         ))
@@ -37,7 +37,7 @@ class Migration(SchemaMigration):
             ('entity_kind', self.gf('django.db.models.fields.CharField')(max_length=10)),
             ('entity_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('playlist', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.Playlist'])),
-            ('teacher_note', self.gf('django.db.models.fields.TextField')()),
+            ('teacher_note', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('sort_order', self.gf('django.db.models.fields.IntegerField')()),
         ))
         db.send_create_signal('securesync', ['PlaylistEntity'])
@@ -154,7 +154,7 @@ class Migration(SchemaMigration):
             'counter': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']", 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'description': ('django.db.models.fields.TextField', [], {}),
+            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'forked_from': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
@@ -176,7 +176,7 @@ class Migration(SchemaMigration):
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'sort_order': ('django.db.models.fields.IntegerField', [], {}),
-            'teacher_note': ('django.db.models.fields.TextField', [], {}),
+            'teacher_note': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         },
         'securesync.registereddevicepublickey': {
