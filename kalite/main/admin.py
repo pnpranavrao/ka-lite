@@ -1,7 +1,6 @@
 from django.contrib import admin
 from models import *
 
-
 class VideoLogAdmin(admin.ModelAdmin):
     list_display = ("youtube_id", "user", "points", "total_seconds_watched", "complete",)
     list_filter = ("youtube_id", "user", "complete",)
@@ -27,5 +26,12 @@ class LanguagePackAdmin(admin.ModelAdmin):
 	list_filter = ("lang_id", "lang_name")
 admin.site.register(LanguagePack, LanguagePackAdmin)
 
+class PlaylistAdmin(admin.ModelAdmin):
+    list_display = ("title","description","forked_from","creator")
+    list_filter = ("creator",)
+admin.site.register(Playlist, PlaylistAdmin)
 
-
+class PlaylistEntityAdmin(admin.ModelAdmin):
+    list_display = ("entity_source","entity_kind","entity_id","playlist","teacher_note","sort_order")
+    list_filter = ("playlist", "entity_kind",)
+admin.site.register(PlaylistEntity, PlaylistEntityAdmin)

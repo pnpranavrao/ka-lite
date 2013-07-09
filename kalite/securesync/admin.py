@@ -73,13 +73,3 @@ admin.site.register(Device, DeviceAdmin)
 class ImportPurgatoryAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "counter", "retry_attempts",)
 admin.site.register(ImportPurgatory, ImportPurgatoryAdmin)
-
-class PlaylistAdmin(admin.ModelAdmin):
-    list_display = ("title","description","forked_from","creator")
-    list_filter = ("creator",)
-admin.site.register(Playlist, PlaylistAdmin)
-
-class PlaylistEntityAdmin(admin.ModelAdmin):
-    list_display = ("entity_source","entity_kind","entity_id","playlist","teacher_note","sort_order")
-    list_filter = ("playlist", "entity_kind",)
-admin.site.register(PlaylistEntity, PlaylistEntityAdmin)

@@ -8,6 +8,40 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'PlaylistEntity'
+        db.create_table('main_playlistentity', (
+            ('id', self.gf('django.db.models.fields.CharField')(max_length=32, primary_key=True)),
+            ('counter', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, blank=True)),
+            ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
+            ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('entity_source', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('entity_kind', self.gf('django.db.models.fields.CharField')(max_length=10)),
+            ('entity_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('playlist', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['main.Playlist'])),
+            ('teacher_note', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('sort_order', self.gf('django.db.models.fields.IntegerField')()),
+        ))
+        db.send_create_signal('main', ['PlaylistEntity'])
+
+        # Adding model 'Playlist'
+        db.create_table('main_playlist', (
+            ('id', self.gf('django.db.models.fields.CharField')(max_length=32, primary_key=True)),
+            ('counter', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, blank=True)),
+            ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
+            ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('creator', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'], null=True, blank=True)),
+            ('forked_from', self.gf('django.db.models.fields.IntegerField')(default=0)),
+        ))
+        db.send_create_signal('main', ['Playlist'])
+
         # Adding field 'UserLogSummary.total_logins'
         db.add_column('main_userlogsummary', 'total_logins',
                       self.gf('django.db.models.fields.IntegerField')(default=0),
@@ -18,6 +52,12 @@ class Migration(SchemaMigration):
         db.alter_column('main_userlogsummary', 'total_seconds', self.gf('django.db.models.fields.IntegerField')())
 
     def backwards(self, orm):
+        # Deleting model 'PlaylistEntity'
+        db.delete_table('main_playlistentity')
+
+        # Deleting model 'Playlist'
+        db.delete_table('main_playlist')
+
         # Deleting field 'UserLogSummary.total_logins'
         db.delete_column('main_userlogsummary', 'total_logins')
 
@@ -52,6 +92,36 @@ class Migration(SchemaMigration):
             'lang_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'lang_version': ('django.db.models.fields.CharField', [], {'max_length': '5'}),
             'software_version': ('django.db.models.fields.CharField', [], {'max_length': '12'})
+        },
+        'main.playlist': {
+            'Meta': {'object_name': 'Playlist'},
+            'counter': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']", 'null': 'True', 'blank': 'True'}),
+            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'forked_from': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
+        },
+        'main.playlistentity': {
+            'Meta': {'object_name': 'PlaylistEntity'},
+            'counter': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'entity_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'entity_kind': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'entity_source': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
+            'playlist': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['main.Playlist']"}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'sort_order': ('django.db.models.fields.IntegerField', [], {}),
+            'teacher_note': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         },
         'main.userlog': {
             'Meta': {'object_name': 'UserLog'},

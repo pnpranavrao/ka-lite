@@ -507,35 +507,4 @@ class ImportPurgatory(models.Model):
         self.counter = self.counter or Device.get_own_device().get_counter()
         super(ImportPurgatory, self).save(*args, **kwargs)
 
-class Playlist(SyncedModel):
-    title = models.CharField(max_length=30)
-    description = models.TextField(blank=True)
-    creator = models.ForeignKey(FacilityUser,blank=True,null=True)
-    forked_from = models.IntegerField(default=0)
-    # Default of 0 above means it's not forked from any other playlist. 
-    
-    def __unicode__(self):
-        return self.title + " : " + self.description
-
-class PlaylistEntity(SyncedModel):
-    ENTITY_SOURCES = (
-            ('Khan','Khan Academy'),
-            ('edX','edX'),
-            ('local','Local Source'),
-            )
-    ENTITY_KINDS = (
-            ('vid','Video'),
-            ('ex', 'Excercise'),
-            ('doc', 'Document'),
-            ('slides', 'Presentation Decks'),
-            )
-    entity_source = models.CharField(max_length=30, choices=ENTITY_SOURCES)
-    entity_kind = models.CharField(max_length=10, choices=ENTITY_KINDS)
-    entity_id = models.CharField(max_length=50) 
-    playlist = models.ForeignKey(Playlist)
-    # Need to give UUID based on the above 4 variables. 
-    #id = 
-    teacher_note = models.TextField(blank=True)
-    sort_order = models.IntegerField()
-
-model_sync.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog, Playlist, PlaylistEntity])
+model_sync.add_syncing_models([Facility, FacilityGroup, FacilityUser, SyncedLog])
