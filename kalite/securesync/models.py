@@ -518,8 +518,19 @@ class Playlist(SyncedModel):
         return self.title + " : " + self.description
 
 class PlaylistEntity(SyncedModel):
-    entity_source = models.CharField(max_length=30)
-    entity_kind = models.CharField(max_length=10)
+    ENTITY_SOURCES = (
+            ('Khan','Khan Academy'),
+            ('edX','edX'),
+            ('local','Local Source'),
+            )
+    ENTITY_KINDS = (
+            ('vid','Video'),
+            ('ex', 'Excercise'),
+            ('doc', 'Document'),
+            ('slides', 'Presentation Decks'),
+            )
+    entity_source = models.CharField(max_length=30, choices=ENTITY_SOURCES)
+    entity_kind = models.CharField(max_length=10, choices=ENTITY_KINDS)
     entity_id = models.CharField(max_length=50) 
     playlist = models.ForeignKey(Playlist)
     # Need to give UUID based on the above 4 variables. 
