@@ -14,6 +14,10 @@
         float: left;
         padding: 10px;
     }
+    .playlist-entities-list li {
+       border-bottom: 1px solid #aaa; 
+    }
+
     </style>
 {% endblock headcss %}
 
@@ -34,7 +38,9 @@
     <div class="clear"></div>
 <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
 </h2>
+
 <div class="clear"></div>
+
 {% if prev %}
 <div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {% trans prev.title %} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
 {% endif %}
@@ -48,8 +54,8 @@
 <div id="playlists123" class="vertical-shadow playlist-entities-list">
     {% if entity_list %}
     <ul>
-       {% for entity in entity_list %} 
-            <li>{{entity}}</li>
+       {% for entity in entity_list %}
+            <li><a href="{% url playlist_view sel_playlist.counter %}">{{entity}}</a></li>
         {% endfor %}
     </ul>
     {%else %}
@@ -57,7 +63,7 @@
     {% endif %}
 </div>
 
-<div id="video-player">
+<div id="video-player" style="float: right;min-width: 900px;">
 {% if video_exists %}
 
     <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">

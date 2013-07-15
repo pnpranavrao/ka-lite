@@ -377,7 +377,7 @@ def user_list(request,facility):
     return context
 
 @render_to("playlist_view.html")
-def playlist_view(request,playlist_id = 3):
+def playlist_view(request,playlist_id = 13):
     selected_playlist = get_object_or_404(Playlist,counter=playlist_id)
     pl_entities = PlaylistEntity.objects.filter(playlist=selected_playlist).order_by('sort_order')
     entity_list = []
@@ -385,7 +385,8 @@ def playlist_view(request,playlist_id = 3):
         entity_list.append(entity.teacher_note)
     context = {
         "entity_list":entity_list,
-        "sel_playlist":selected_playlist
+        "sel_playlist":selected_playlist,
+        "video_exists":True
     }
     return context 
 
