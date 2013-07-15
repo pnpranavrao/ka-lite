@@ -41,6 +41,10 @@ urlpatterns += patterns('main.views',
     url(r'^update/$', 'update', {}, 'update'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
 
+
+    url(r'^playlists/view/$', 'playlist_view', {},'playlist_view'),
+    url(r'^playlists/view/(?P<playlist_id>\d+)/$', 'playlist_view', {},'playlist_view'),
+
     url(r'^coachreports/', include(coachreports.urls)),
     url(r'^api/', include(main.api_urls)),
 )

@@ -23,7 +23,7 @@ from main import topicdata
 from securesync.views import require_admin, facility_required
 from config.models import Settings
 from securesync.models import Facility, FacilityUser,FacilityGroup
-from models import VideoLog, ExerciseLog, VideoFile
+from models import VideoLog, ExerciseLog, VideoFile, Playlist, PlaylistEntity
 from config.models import Settings
 from securesync.api_client import SyncClient
 from utils import topic_tools
@@ -376,6 +376,18 @@ def user_list(request,facility):
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
     return context
 
+@render_to("playlist_view.html")
+def playlist_view(request,playlist_id = 3):
+    selected_playlist = get_object_or_404(Playlist,counter=playlist_id)
+    pl_entities = PlaylistEntity.objects.filter(playlist=selected_playlist).order_by('sort_order')
+    entity_list = []
+    for entity in pl_entities:
+        entity_list.append(entity.teacher_note)
+    context = {
+        "entity_list":entity_list,
+        "sel_playlist":selected_playlist
+    }
+    return context 
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))
