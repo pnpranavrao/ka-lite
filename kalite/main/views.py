@@ -31,6 +31,10 @@ from utils.jobs import force_job
 from utils.videos import video_connection_is_available
 from utils.internet import am_i_online
 
+# We need the reverse of ID2SLUG
+youtube_ids,slugs = zip(*topicdata.ID2SLUG_MAP.iteritems())
+topicdata.SLUG2ID_MAP = dict(zip(slugs,youtube_ids))
+ 
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
@@ -382,11 +386,15 @@ def playlist_view(request,playlist_id = 13):
     pl_entities = PlaylistEntity.objects.filter(playlist=selected_playlist).order_by('sort_order')
     entity_list = []
     for entity in pl_entities:
-        entity_list.append(entity.teacher_note)
+        entity_item = {}
+        slug = entity.entity_id
+        entity_item["youtube_id"] = topicdata.SLUG2ID_MAP[slug]
+        entity_item["teacher_note"] = entity.teacher_note
+        entity_list.append(entity_item)
     context = {
-        "entity_list":entity_list,
-        "sel_playlist":selected_playlist,
-        "video_exists":True
+        "entity_list": entity_list,
+        "selected_playlist": selected_playlist,
+        "video_exists": True
     }
     return context 
 

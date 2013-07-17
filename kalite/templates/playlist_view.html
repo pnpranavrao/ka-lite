@@ -9,8 +9,17 @@
     <link href="{% static "video-js/video-js.min.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css>">
     <style>
+    #video-player {
+        float: right;
+        min-width: 900px;
+        min-height: 600px; 
+    }
+
+    #playlist-welcome {
+        text-align: center;
+    }
     .playlist-entities-list {
-        max-width: 100px;
+        max-width: 120px;
         float: left;
         padding: 10px;
     }
@@ -31,31 +40,23 @@
 
 {% block content %}
 <h2 class="title-header">
-    <span class="title">{% trans sel_playlist.title %}</span><br/>
-    {% if sel_playlist.description %}
-        <span class="long-description">{% trans sel_playlist.description %}</span>
+    <span class="title">{% trans selected_playlist.title %}</span><br/>
+    {% if selected_playlist.description %}
+        <span class="long-description">{% trans selected_playlist.description %}</span>
     {% endif %}
     <div class="clear"></div>
 <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
 </h2>
 
 <div class="clear"></div>
-
-{% if prev %}
-<div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {% trans prev.title %} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
-{% endif %}
-
-{% if next %}
-<div class="vidnext"><a href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {% trans next.title %} &gt;</a></div>
-{% endif %}
-
+{# Here the prev and next navigation buttons are to be present #}
 <div class="clear"></div>
 
-<div id="playlists123" class="vertical-shadow playlist-entities-list">
+<div id="playlist_list" class="vertical-shadow playlist-entities-list">
     {% if entity_list %}
     <ul>
-       {% for entity in entity_list %}
-            <li><a href="{% url playlist_view sel_playlist.counter %}">{{entity}}</a></li>
+       {% for entity_item in entity_list %}
+            <li><button name="hello" id="{{entity_item.youtube_id}}-entity">{{entity_item.teacher_note}}</button></li>
         {% endfor %}
     </ul>
     {%else %}
@@ -63,15 +64,13 @@
     {% endif %}
 </div>
 
-<div id="video-player" style="float: right;min-width: 900px;">
+<div id="video-player">
 {% if video_exists %}
-
-    <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ video.youtube_id }}.png" data-setup="{}">
-        <source src="{{ CONTENT_URL }}{{ video.youtube_id }}.mp4" type="video/mp4" />
-        <track kind="captions" src="{{ CONTENT_URL }}{{ video.youtube_id }}.srt" srclang="en" label="On" />
-    </video>
-    <img class="video-thumb" src="{{ CONTENT_URL }}{{ video.youtube_id }}.png" style="position: absolute; left: -9999999px;">
-{% endif %}</div>
+    <span id="playlist_welcome">Your video shall appear here. Click on one of them from the playlist on the left. </span>
+{% else %}
+    <span id="playlist_welcome">There do not seem to be any videos in this playlist. Please bug your teacher about it. </span>
+{% endif %}
+</div>
 
 {% endblock content %}
 
@@ -120,6 +119,23 @@ $(function() {
         initialize_video(width, height);
                             
     });
+
+// This is extremely hacky, I need to read up about how to pass the entity_item information in the event object 
+// when I click on a particular playlist item.
+    {% if entity_list %}
+       {% for entity_item in entity_list %}
+            $("#{{entity_item.youtube_id}}-entity").on('click',function(event) {
+                event.preventDefault();
+                console.log("inside"+"{{entity_item.youtube_id}}");
+                $('#video-player').empty();
+                $("#video-player").html('<video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.png" data-setup="{}">'+
+                    '<source src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.mp4" type="video/mp4" />'+
+                    '<track kind="captions" src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.srt" srclang="en" label="On" />'+
+                    '</video>')
+            });
+       {% endfor %}
+    {% endif %}   
+
 });
 </script>
 {% endblock bodyjs %}
