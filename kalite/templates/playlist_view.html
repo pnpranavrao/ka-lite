@@ -56,7 +56,7 @@
     {% if entity_list %}
     <ul>
        {% for entity_item in entity_list %}
-            <li><button name="hello" id="{{entity_item.youtube_id}}-entity">{{entity_item.teacher_note}}</button></li>
+            <li><button name="hello" id="{{entity_item.youtube_id}}-entity" class="playlist-entity">{{entity_item.teacher_note}}</button></li>
         {% endfor %}
     </ul>
     {%else %}
@@ -67,7 +67,7 @@
 <div id="video-player">
 {% if video_exists %}
     <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600">
-       {# <source src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.mp4" type="video/mp4" /> #}
+        {# How to add srt track to video tag from js? #}
        {# <track kind="captions" src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.srt" srclang="en" label="On" /> #}
     </video>
 {% else %}
@@ -108,24 +108,18 @@ Why are we passing youtube_id to the backbone view?
     I guess it is only to take care of the backend accumulation of points and such, and NOT for
     displaying the video itself.
 */                            
-   
-// This is extremely hacky, I need to read up about how to pass the entity_item information in the event object 
-// when I click on a particular playlist item. 
-    {% if entity_list %}
-       {% for entity_item in entity_list %}
-            $("#{{entity_item.youtube_id}}-entity").on('click',function(event) {
-                event.preventDefault();
-                console.log("inside"+"{{entity_item.youtube_id}}");
-                js_player = _V_($("video").attr("id")); 
-                // Approximate heights and widths given. Fix this later
-                initialize_video(600,600,"{{entity_item.youtube_id}}");
-                js_player.ready(function(){
-                    source_url = "http://127.0.0.1:7001/content/"+"{{entity_item.youtube_id}}"+".mp4";
-                    this.src(source_url);
-                });
-            });
-       {% endfor %}
-    {% endif %}   
+  $(".playlist-entity").click(function(event) {
+        button_id = event.target.id;
+        js_player = _V_($("video").attr("id")); 
+        youtube_id = button_id.split("-")[0];
+        console.log(youtube_id);
+        // Approximate heights and widths given. Fix this later
+        initialize_video(600,600,youtube_id);
+        js_player.ready(function(){
+            source_url = "http://127.0.0.1:7001/content/"+youtube_id+".mp4";
+            this.src(source_url);
+        });
+    });
 });
 </script>
 {% endblock bodyjs %}
