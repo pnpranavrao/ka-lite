@@ -51,6 +51,12 @@ urlpatterns += patterns('main.views',
     url(r'^management/(?P<org_id>\s{0})', include(control_panel.urls)), # no org_id, but parameter needed for reverse url look-up
 )
 
+# Playlists
+urlpatterns += patterns('main.views',
+    url(r'^playlists/view/$', 'playlist_view', {},'playlist_view'),
+    url(r'^playlists/view/(?P<playlist_id>\d+)/$', 'playlist_view', {},'playlist_view'),
+)
+
 # Testing
 if "loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns('main.views',

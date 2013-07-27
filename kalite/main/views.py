@@ -23,7 +23,7 @@ import settings
 from config.models import Settings
 from control_panel.views import user_management_context
 from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile
+from main.models import VideoLog, ExerciseLog, VideoFile, Playlist, PlaylistEntity
 from securesync.api_client import SyncClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from securesync.views import require_admin, facility_required
