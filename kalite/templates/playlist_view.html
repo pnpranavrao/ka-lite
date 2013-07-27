@@ -66,7 +66,10 @@
 
 <div id="video-player">
 {% if video_exists %}
-    <span id="playlist_welcome">Your video shall appear here. Click on one of them from the playlist on the left. </span>
+    <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600">
+       {# <source src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.mp4" type="video/mp4" /> #}
+       {# <track kind="captions" src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.srt" srclang="en" label="On" /> #}
+    </video>
 {% else %}
     <span id="playlist_welcome">There do not seem to be any videos in this playlist. Please bug your teacher about it. </span>
 {% endif %}
@@ -81,11 +84,10 @@
 
 $(function() {    
     
-    var initialize_video = _.once(function(width, height) {
-        
+    var initialize_video = function(width, height, youtube_id) {
         window.videoView = new VideoView({
             el: $("#video-player"),
-            youtube_id: "{{ video.youtube_id }}",
+            youtube_id: youtube_id,
             width: width,
             height: height
         });
@@ -100,42 +102,30 @@ $(function() {
         
         resize_video();
         
-    });
-
-    $("video").bind("loadedmetadata", function() {
-        
-        var width = $(this).prop("videoWidth");
-        var height = $(this).prop("videoHeight");
-        
-        initialize_video(width, height);
-        
-    });
-
-    $(".video-thumb").load(function() {
-
-        var width = $(".video-thumb").width();
-        var height = $(".video-thumb").height();
-        
-        initialize_video(width, height);
-                            
-    });
-
+    };
+/*
+Why are we passing youtube_id to the backbone view?
+    I guess it is only to take care of the backend accumulation of points and such, and NOT for
+    displaying the video itself.
+*/                            
+   
 // This is extremely hacky, I need to read up about how to pass the entity_item information in the event object 
-// when I click on a particular playlist item.
+// when I click on a particular playlist item. 
     {% if entity_list %}
        {% for entity_item in entity_list %}
             $("#{{entity_item.youtube_id}}-entity").on('click',function(event) {
                 event.preventDefault();
                 console.log("inside"+"{{entity_item.youtube_id}}");
-                $('#video-player').empty();
-                $("#video-player").html('<video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" poster="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.png" data-setup="{}">'+
-                    '<source src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.mp4" type="video/mp4" />'+
-                    '<track kind="captions" src="{{ CONTENT_URL }}{{ entity_item.youtube_id }}.srt" srclang="en" label="On" />'+
-                    '</video>')
+                js_player = _V_($("video").attr("id")); 
+                // Approximate heights and widths given. Fix this later
+                initialize_video(600,600,"{{entity_item.youtube_id}}");
+                js_player.ready(function(){
+                    source_url = "http://127.0.0.1:7001/content/"+"{{entity_item.youtube_id}}"+".mp4";
+                    this.src(source_url);
+                });
             });
        {% endfor %}
     {% endif %}   
-
 });
 </script>
 {% endblock bodyjs %}
