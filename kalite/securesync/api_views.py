@@ -178,7 +178,7 @@ def device_download(data, session):
     devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
-    
+
     # Return the objects serialized to the version of the other device.
     return JsonResponse({"devices": serializers.serialize("json", devices + devicezones, dest_version=session.client_version, ensure_ascii=False)})
 
@@ -195,7 +195,7 @@ def device_upload(data, session):
         result = model_sync.save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
         result = { "error": e.message, "saved_model_count": 0 }
-        
+
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
@@ -278,7 +278,7 @@ def status(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
-        if not (isinstance(message.message, SafeString) or isinstance(message.message, SafeUnicode)):
+        if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
             msg_txt = cgi.escape(str(msg_txt))
 
         message_dicts.append({
@@ -286,6 +286,7 @@ def status(request):
             "text": msg_txt,
         })
 
+    # Default data
     data = {
         "is_logged_in": request.is_logged_in,
         "registered": bool(Settings.get("registered")),
@@ -294,11 +295,13 @@ def status(request):
         "points": 0,
         "messages": message_dicts,
     }
+    # Override properties using facility data
     if "facility_user" in request.session:
         user = request.session["facility_user"]
         data["is_logged_in"] = True
         data["username"] = user.get_name()
         data["points"] = VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
+    # Override data using django data
     if request.user.is_authenticated():
         data["is_logged_in"] = True
         data["username"] = request.user.username
