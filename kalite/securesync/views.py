@@ -1,6 +1,8 @@
+from __future__ import absolute_import
+
 import urllib
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None   
+from annoying.functions import get_object_or_None
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -18,9 +20,9 @@ from main.models import UserLog
 from securesync import crypto
 from securesync.api_client import SyncClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import SyncSession, Device, Facility, FacilityGroup
+from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
 from utils.jobs import force_job
-from utils.decorators import require_admin, central_server_only, distributed_server_only
+from utils.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from utils.internet import set_query_params
 
 
@@ -74,7 +76,7 @@ def facility_required(handler):
 
 
 def set_as_registered():
-    force_job("syncmodels", "Secure Sync", "HOURLY")
+    force_job("syncmodels", "Secure Sync", "HOURLY")  # now launches asynchronously
     Settings.set("registered", True)
 
 
@@ -117,11 +119,13 @@ def register_public_key_server(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
-            return HttpResponseRedirect(reverse("homepage"))
+            zone_id = form.data["zone"]
+            org_id = Zone.objects.get(id=zone_id).get_org().id
+            return HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
     else:
         form = RegisteredDevicePublicKeyForm(request.user)
     return {
-        "form": form
+        "form": form,
     }
 
 
@@ -175,6 +179,7 @@ def add_facility_student(request):
     return add_facility_user(request, is_teacher=False)
 
 
+@distributed_server_only
 @render_to("securesync/add_facility_user.html")
 @facility_required
 def add_facility_user(request, facility, is_teacher):
@@ -267,22 +272,15 @@ def add_group(request, facility):
 
 
 @distributed_server_only
+@facility_from_request
 @render_to("securesync/login.html")
-def login(request):
+def login(request, facility):
     facilities = Facility.objects.all()
-
-    facility = get_facility_from_request(request)
     facility_id = facility and facility.id or None
 
     if request.method == 'POST':
-
-        # log out any Django user
-        if request.user.is_authenticated():
-            auth_logout(request)
-
-        # log out a facility user
-        if "facility_user" in request.session:
-            del request.session["facility_user"]
+        # log out any Django user or facility user
+        logout(request)
 
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
